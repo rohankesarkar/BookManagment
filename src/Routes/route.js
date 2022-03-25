@@ -7,6 +7,8 @@ const reviewController = require("../Controllers/reviewController")
 
 
 
+router.post('/register', userController.createUser)
+
 
 
 module.exports = router;

@@ -4,8 +4,8 @@ const validator = require('../Validator/validation');
 
 const createUser = async function(req,res) {
     try {
-        const data = req.body;
-        const {title,name,phone,email,password,address} = data;
+        const body = req.body;
+        const {title,name,phone,email,password,address} = body;
 
         //Validate body
         if (!validator.isValidBody(body)) {
@@ -87,11 +87,11 @@ const createUser = async function(req,res) {
                return res.status(409).send({status: false, msg: "User password already exists" });
             }
 
-            // Finally the registration of User is successful
-            const userData = await userModel.create(data)
-            res.status(201).send({ status: true, data: userData})
-
         }
+
+        // Finally the registration of User is successful
+        const userData = await userModel.create(body)
+        res.status(201).send({ status: true, msg: userData})
 
     }
     catch (err) {
