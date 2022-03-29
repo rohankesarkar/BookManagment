@@ -80,7 +80,7 @@ Filter books list by applying filters. Query param can have any combination of b
 
 # By userId
 
-# By category
+By category
 By subcategory example of a query url: books?filtername=filtervalue&f2=fv2
 Return all books sorted by book name in Alphabatical order
 
@@ -106,7 +106,7 @@ Check if the bookId exists and is not deleted. If it does, mark it deleted and r
 If the book document doesn't exist then return an HTTP status of 404 with a body like this
 
 # Review APIs
-POST /books/:bookId/review
+# POST /books/:bookId/review
 Add a review for the book in reviews collection.
 Check if the bookId exists and is not deleted before adding the review. Send an error response with appropirate status code like this if the book does not exist
 Get review details like review, rating, reviewer's name in request body.
@@ -299,3 +299,11 @@ reviews
     "reviewsData": []
   }
 }
+
+
+
+
+        // let decodedUserToken = req.user;
+// if(!(decodedUserToken.userId === body.userId)) {
+        //     return res.status(400).send({ status: false, msg: "Token or user Id does not match"});
+        // }

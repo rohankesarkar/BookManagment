@@ -1,10 +1,18 @@
 const userModel = require('../Models/userModel');
-const userController = require('../Models/userModel');
+const jwt = require("jsonwebtoken")
 const validator = require('../Validator/validation');
 
+
+// Post /register
 const createUser = async function(req,res) {
     try {
         const body = req.body;
+        
+        const query = req.query;
+        if(validator.isValidBody(query)) {
+            return res.status(400).send({ status: false, msg: "Invalid parameters"});
+        }
+
         const {title,name,phone,email,password,address} = body;
 
         //Validate body
@@ -102,7 +110,70 @@ const createUser = async function(req,res) {
 
 
 
+// Post /login
+const login = async function(req,res) {
+    try {
+        const body = req.body
 
+        const query = req.query;
+        if(validator.isValidBody(query)) {
+            return res.status(400).send({ status: false, msg: "Invalid parameters"});
+        }
+
+        //Validate body
+        if (!validator.isValidBody(body)) {
+            return res.status(400).send({ status: false, msg: "Login body should not be empty" });
+        }
+
+        // email and password
+        let email = req.body.email
+        let password = req.body.password
+
+        //Validate email
+        if (!validator.isValid(email)) {
+            return res.status(400).send({ status: false, msg: "Email id is required" });
+        }
+
+        // Validation of email
+        if(!validator.isValidEmail(email)) {
+            return res.status(400).send({ status: false, msg: "Email is not valid"});
+        }
+
+        //Validate password
+        if (!validator.isValid(password)) {
+            return res.status(400).send({ status: false, msg: "Password is required" });
+        }
+
+        // Validation of password
+        if(!validator.isValidPassword(password)) {
+            return res.status(400).send({ status: false, msg: "Invalid password"});
+        }
+
+        if(email && password) {
+            let user = await userModel.findOne({email: email, password: password})
+
+            if (user) {
+                const Token = jwt.sign({
+                    userId: user._id,
+                    iat: Math.floor(Date.now() / 1000), //issue date
+                    exp: Math.floor(Date.now() / 1000) + 60 * 60 //expiry date
+                }, "Group38")  
+                res.header('x-api-key', Token)
+
+                res.status(200).send({ status: true, msg: "success", data: Token })
+            } else {
+                return res.status(400).send({ status: false, msg: "Invalid Credentials" })
+            }
+        } else {
+            return res.status(400).send({ status: false, msg: "request body must contain  email and password" })
+        }
+    }
+    catch (err) {
+        console.log("This is the error :", err.message)
+        return res.status(500).send({ msg: "Error", error: err.message })
+    }
+}
 
 
 module.exports.createUser = createUser
+module.exports.login = login
