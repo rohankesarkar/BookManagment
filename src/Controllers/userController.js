@@ -3,7 +3,8 @@ const jwt = require("jsonwebtoken")
 const validator = require('../Validator/validation');
 
 
-// Post /register
+// ************************************************************* Post /register *************************************************************//
+
 const createUser = async function(req,res) {
     try {
         const body = req.body;
@@ -71,28 +72,17 @@ const createUser = async function(req,res) {
         let duplicateLength = duplicateEntries.length
 
         if (duplicateLength != 0) {
-            // Checking duplicate name
-            const duplicateName = await userModel.findOne({ name: name });
-            if (duplicateName) {
-                return res.status(409).send({status: false, msg: "User Name already exists" });
-            }
 
            // Checking duplicate phone
            const duplicatePhone = await userModel.findOne({ phone: phone });
            if (duplicatePhone) {
-               return res.status(409).send({status: false, msg: "User phone number already exists" });
+               return res.status(400).send({status: false, msg: "User phone number already exists" });
             }
             
             // Checking duplicate email
            const duplicateEmail = await userModel.findOne({ email: email });
            if (duplicateEmail) {
-               return res.status(409).send({status: false, msg: "User emailId already exists" });
-            }
-            
-            // Checking duplicate password
-            const duplicatePassword = await userModel.findOne({ password: password });
-           if (duplicatePassword) {
-               return res.status(409).send({status: false, msg: "User password already exists" });
+               return res.status(400).send({status: false, msg: "User emailId already exists" });
             }
 
         }
@@ -108,9 +98,14 @@ const createUser = async function(req,res) {
     }
 }
 
+module.exports.createUser = createUser
 
 
-// Post /login
+
+
+
+// ************************************************************ Post /login ************************************************************* //
+
 const login = async function(req,res) {
     try {
         const body = req.body
@@ -174,6 +169,6 @@ const login = async function(req,res) {
     }
 }
 
-
-module.exports.createUser = createUser
 module.exports.login = login
+
+///////////////////////////////////////////////////////////////////// END OF USER CONTROLLER /////////////////////////////////////////////////

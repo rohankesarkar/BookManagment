@@ -13,10 +13,6 @@ const ReviewSchema=new mongoose.Schema({
         type:String,
         required: true,
         default:'Guest',
-        // value: {
-        //     typeId: objectId,
-        //     ref: "newUser"
-        // }
         trim: true
     },
 

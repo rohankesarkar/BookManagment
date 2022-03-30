@@ -37,7 +37,7 @@ const BooksSchema = new mongoose.Schema({
     },
 
     subcategory: {
-        type:String,
+        type:[String],
         required: true,
         trim:true
     },
