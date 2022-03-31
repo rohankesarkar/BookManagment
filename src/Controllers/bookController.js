@@ -115,7 +115,7 @@ const createBook = async function(req,res) {
     }
     catch (err) {
         console.log("This is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -179,7 +179,7 @@ const getBook = async function (req, res) {
         
     } catch (err) {
         console.log("This is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -234,7 +234,7 @@ const getBookWithReview = async function(req,res) {
     
     catch (err) {
         console.log("This is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -251,7 +251,7 @@ const updateBooks = async function (req, res) {
     try {
         const updateBookData = {}
     let bookId = req.params.bookId
-    if(!bookId) res.status(400).send({status:false, msg:"bookId is required"})
+    if(!bookId) return res.status(400).send({status:false, msg:"bookId is required"})
 
     // Query must not be present
     const query = req.query;
@@ -262,10 +262,10 @@ const updateBooks = async function (req, res) {
     let { title, excerpt, releasedAt, ISBN, subcategory } = req.body
    
     let titleExist = await bookModel.findOne({ title: title })
-    if (titleExist) res.status(400).send({ status: false, msg: "title exist already" })
+    if (titleExist) return res.status(400).send({ status: false, msg: "title exist already" })
     
     let isbnExist = await bookModel.findOne({ ISBN: ISBN })
-    if (isbnExist) res.status(400).send({ status: false, msg: "ISBN exist already" })
+    if (isbnExist) return res.status(400).send({ status: false, msg: "ISBN exist already" })
 
     let data = await bookModel.findById(bookId)
     if (!data.isDeleted == false){
@@ -296,7 +296,7 @@ const updateBooks = async function (req, res) {
 }
     catch (err) {
         console.log("This is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -393,18 +393,18 @@ const deleteBook = async function(req,res){
 
           let data =await bookModel.findById(bookId)
           if(data.isDeleted == true){
-              res.status(400).send({ status: false, msg: "This book is already deleted" })
+              return res.status(400).send({ status: false, msg: "This book is already deleted" })
           }
           
           if(data.isDeleted == false){
             //   let date = moment().format('YYYY-MM-DD[T]HH:mm:ss')
               await bookModel.findByIdAndUpdate({ _id: bookId, isDeleted: false }, { isDeleted: true, deletedAt: new Date() }, { new: true })
-              res.status(200).send({ status: true, msg: "Book deleted successfully" })
+              return res.status(200).send({ status: true, msg: "Book deleted successfully" })
             }
         }
         catch (err) {
         console.log("This is the error :", err.message)
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(500).send({ msg: "Error", error: err.message })
     }
   }
 
