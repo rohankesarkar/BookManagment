@@ -4,6 +4,7 @@ const mongoose = require("mongoose")
 const isValid = function (value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false 
+    if (typeof value === 'number' && value.toString().trim().length === 0) return false
     return true;
 }
 //  && typeof value === ['string']
@@ -49,6 +50,7 @@ const isValidateISBN = function(value) {
 }
 
 const isValidDate = (date) => {
+    //instead we can use date regex
     const specificDate = new Date(date).setHours(0, 0, 0, 0);
     const today = new Date().setHours(0, 0, 0, 0);
     return specificDate < today;

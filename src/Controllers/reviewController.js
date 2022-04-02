@@ -63,6 +63,8 @@ const bookReview = async function (req, res) {
         if (searchBook.isDeleted === true) {
             return res.status(400).send({ status: false, message: "Book has been already deleted." })
         }
+
+        if(params != req.body.bookId)  return res.status(400).send({status:false, msg:"bookId is not matching with review"})
         body.bookId = searchBook._id;
         body["reviewedAt"] = new Date()
 

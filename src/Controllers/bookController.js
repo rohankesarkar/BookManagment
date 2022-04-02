@@ -152,14 +152,14 @@ const getBook = async function (req, res) {
                 if(!validator.isValid(req.query.category)) {
                     return res.status(400).send({status: false, msg: "Book Category not valid"})
                 }
-                filter["category"] = req.query.category
+                filter["category"] = req.query.category.trim()
             }
 
             if(req.query.subcategory) {
                 if(!(validator.isValid(req.query.subcategory))) {
                     return res.status(400).send({status: false, msg: "subcategory not valid"})
                 }
-                filter["subcategory"] = req.query.subcategory
+                filter["subcategory"] = req.query.subcategory.trim()
             }
                     
         
@@ -227,9 +227,11 @@ const getBookWithReview = async function(req,res) {
         
         let reviewData = await reviewModel.find({ bookId: _id, isDeleted: false });
 
-        const book = {_id,title,excerpt,userId,category,subcategory,isDeleted,reviews: reviewData.length,deletedAt,releasedAt,createdAt,updatedAt,reviewsData: reviewData};
-        
-        return res.status(200).send({ status: true, data: book})
+        // const book = {_id,title,excerpt,userId,category,subcategory,isDeleted,reviews: reviewData.length,deletedAt,releasedAt,createdAt,updatedAt,reviewsData: reviewData};
+        const data = bookDetails.toObject();
+        data['reviewsData'] = reviewData
+
+        return res.status(200).send({ status: true, data:data})
     }
     
     catch (err) {
@@ -260,9 +262,23 @@ const updateBooks = async function (req, res) {
     }
 
     let { title, excerpt, releasedAt, ISBN, subcategory } = req.body
-   
-    let titleExist = await bookModel.findOne({ title: title })
+
+    
+    if(title.trim().length == 0) return res.status(400).send({status:false, msg:"Please entre  title"})
+    if(excerpt.length == 0) return res.status(400).send({status:false, msg:"Please entre  excerpt"})
+    if(subcategory.length == 0) return res.status(400).send({status:false, msg:"Please entre title"})
+
+
+
+        let titleExist = await bookModel.findOne({ title: title })
     if (titleExist) return res.status(400).send({ status: false, msg: "title exist already" })
+
+     
+
+    if(!validator.isValidateISBN(ISBN)) {
+        return res.status(400).send({ status: false, msg: "ISBN validation is required"});
+    }
+    
     
     let isbnExist = await bookModel.findOne({ ISBN: ISBN })
     if (isbnExist) return res.status(400).send({ status: false, msg: "ISBN exist already" })
@@ -378,7 +394,7 @@ module.exports.updateBooks = updateBooks
 
 
 // ********************************************************** DELETE /books/:bookId ********************************************************** //
-
+// /books/:bookId
 const deleteBook = async function(req,res){
     try{
         const bookId = req.params.bookId
@@ -398,7 +414,7 @@ const deleteBook = async function(req,res){
           
           if(data.isDeleted == false){
             //   let date = moment().format('YYYY-MM-DD[T]HH:mm:ss')
-              await bookModel.findByIdAndUpdate({ _id: bookId, isDeleted: false }, { isDeleted: true, deletedAt: new Date() }, { new: true })
+              await bookModel.findByIdAndUpdate({ _id: bookId, isDeleted: false }, { isDeleted: true, deletedAt: new Date() }, { new: true, upsert:true })
               return res.status(200).send({ status: true, msg: "Book deleted successfully" })
             }
         }
